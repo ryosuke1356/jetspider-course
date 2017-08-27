@@ -96,7 +96,8 @@ module JetSpider
     def visit_FunctionExprNode(n) raise "FunctionExprNode not implemented"; end
 
     def visit_ReturnNode(n)
-      raise NotImplementedError, 'ReturnNode'
+      visit n.value # return文の式をトラバース
+      # raise NotImplementedError, 'ReturnNode'
     end
 
     # These nodes should not be visited directly
@@ -163,7 +164,7 @@ module JetSpider
     end
 
     def visit_ConditionalNode(n)
-      raise NotImplementedError, 'ConditinalNode'
+      visit n.condition
     end
 
     def visit_WhileNode(n)
@@ -207,7 +208,9 @@ module JetSpider
     end
 
     def visit_AddNode(n)
-      raise NotImplementedError, 'AddNode'
+      visit n.left
+      visit n.value
+      @asm.add
     end
 
     def visit_SubtractNode(n)
@@ -317,7 +320,7 @@ module JetSpider
     end
 
     def visit_NumberNode(n)
-      raise NotImplementedError, 'NumberNode'
+      @asm.int8(n.value)
     end
 
     def visit_StringNode(n)
