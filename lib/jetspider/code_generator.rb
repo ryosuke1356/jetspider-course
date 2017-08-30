@@ -164,7 +164,19 @@ module JetSpider
     end
 
     def visit_ConditionalNode(n)
-      visit n.condition
+      loc = @asm.lazy_location      # lazy_location = Location.new(nil)
+      loc_end = @asm.lazy_location
+
+      visit n.conditions
+      # condition が false のとき fix_location loc に飛ぶ
+      @asm.ifeq loc                 # ifeq = put_relative_jump 'ifeq', target
+      visit n.value
+      # 無条件で fix_location loc_end に飛ぶ
+      @asm.goto loc_end
+      @asm.fix_location loc         # fix_location = loc.fix current_pc
+      visit n.else
+      @asm.fix_location loc_end
+
     end
 
     def visit_WhileNode(n)
