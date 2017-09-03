@@ -224,9 +224,15 @@ module JetSpider
     end
 
     def visit_AddNode(n)
-      visit n.left
-      visit n.value
-      @asm.add
+      # left と value の class を見ることで数字か変数かを判別している
+      if n.left.is_a?(RKelly::Nodes::NumberNode) && n.value.is_a?(RKelly::Nodes::NumberNode)
+        value = n.left.value + n.value.value
+        @asm.int8 value
+      else
+        visit n.left
+        visit n.value
+        @asm.add
+      end
     end
 
     def visit_SubtractNode(n)
@@ -336,7 +342,7 @@ module JetSpider
     end
 
     def visit_NumberNode(n)
-      if n.value = 1
+      if n.value == 1
         @asm.one
       else
         @asm.int8(n.value)
